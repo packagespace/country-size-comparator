@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "country-json": "^1.1.2",
-    "d3": "^7.6.1"
+    "d3": "^7.6.1",
+    "topojson": "^3.0.2"
   }
 }
