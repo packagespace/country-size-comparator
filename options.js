@@ -1,8 +1,7 @@
 export const options = {
-	title: "United States Educational Attainment",
-	description:
-		"Percentage of adults age 25 and older with a bachelor's degree or higher (2010-2014)",
-	chartId: "USAEducationalAttainmentChoropleth",
+	title: "Country Size Comparator",
+	description: "Click on a country",
+	chartId: "WorldMap",
 	targetId: "visHolder",
 	dimensions: {
 		width: 1250,
