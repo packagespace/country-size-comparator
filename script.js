@@ -167,18 +167,29 @@ function Choropleth(
 		.attr("id", "tooltip")
 		.style("font-size", "16px");
   */
+
+	const countryData = getCountryDataWithSize();
+	function getCountryDataWithSize() {
+		return countriesFeatureCollection.features.map((feature) => {
+			const name = feature.properties.name;
+			const dataRow = data.find((row) => row.country === name);
+			const size = dataRow !== undefined ? dataRow.area : undefined;
+			return { ...feature, size };
+		});
+	}
+	console.log(countryData);
 	const countries = mapArea
 		.append("g")
 		.selectAll("path")
-		.data(countriesFeatureCollection.features)
+		.data(countryData)
 		.join("path")
 		.attr("class", "country")
 		.attr("d", path)
 		.on("click", countryClick);
 
 	function countryClick(d) {
-		d3.selectAll(".country").attr("fill", "black");
-		d3.select(this).attr("fill", "red");
+		d3.selectAll(".country").attr("fill", "red");
+		d3.select(this).attr("fill", "black");
 	}
 
 	const mesh = topojson.mesh(map, map.objects.countries, (a, b) => a !== b);
