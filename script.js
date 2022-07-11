@@ -81,13 +81,6 @@ function Choropleth(
 		.attr("y", 50)
 		.attr("x", 20);
 	/*
-	//create scale
-	const colorScale = d3
-		.scaleQuantile()
-		.domain(d3.extent(data, dataAccessor))
-		.range(d3.schemeGreens[groups]);
-  */
-	/*
 	//create legend data
 	const legendData = [d3.min(data, dataAccessor), ...colorScale.quantiles()];
   
