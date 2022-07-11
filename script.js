@@ -177,7 +177,7 @@ function Choropleth(
 			return { ...feature, size };
 		});
 	}
-	console.log(countryData);
+
 	const countries = mapArea
 		.append("g")
 		.selectAll("path")
