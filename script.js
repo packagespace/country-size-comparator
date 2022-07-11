@@ -163,7 +163,6 @@ function Choropleth(
 		.style("font-size", "16px");
   */
 	const correctedData = dataCorrecter(data);
-	//	console.log(data, correctedData);
 	const countryData = getCountryDataWithSize();
 	function getCountryDataWithSize() {
 		return countriesFeatureCollection.features.map((feature) => {
