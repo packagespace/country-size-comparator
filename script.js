@@ -175,7 +175,8 @@ function Choropleth(
 		.join("path")
 		.attr("class", "country")
 		.attr("d", path)
-		.on("click", countryClick);
+		.on("click", countryClick)
+		.attr("stroke", "black");
 
 	function countryClick(_e, d) {
 		const selectedCountrySize = d.size;
@@ -218,23 +219,22 @@ function Choropleth(
 				(d) => d.size / selectedCountrySize
 			);
 			return d3
-				.scaleDivergingSymlog()
+				.scaleDiverging()
 				.domain([extent[0], 1, extent[1]])
 				.interpolator(d3.interpolatePuOr);
 		}
 
 		function updateCountryColors(e) {
-			d3.selectAll(".country").attr("fill", (d) =>
-				colorScale(d.size / selectedCountrySize)
-			);
-			d3.select(e).attr("fill", "green");
+			d3.selectAll(".country")
+				.attr("fill", (d) => colorScale(d.size / selectedCountrySize))
+				.attr("stroke-width", 0);
+			d3.select(e).attr("stroke-width", 5);
 		}
 	}
 
 	const mesh = topojson.mesh(map, map.objects.countries, (a, b) => a !== b);
 	const borders = mapArea
 		.append("path")
-		.attr("pointer-events", "none")
 		.attr("fill", "none")
 		.attr("stroke", "grey")
 		.attr("stroke-width", 1)
