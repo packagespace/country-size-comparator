@@ -26,9 +26,6 @@ function Choropleth(
 			bottom: 0,
 			left: 0,
 		},
-		dataAccessor = (d) => d,
-		idAccessor = (d) => d,
-		groups = 5,
 		legendDimensions = {
 			width: 100,
 			height: 100,
@@ -45,6 +42,7 @@ function Choropleth(
 		},
 	}
 ) {
+	console.log(map);
 	//compute dimensions
 	function getTotalDimensions(dimensions, padding) {
 		return [
@@ -76,6 +74,7 @@ function Choropleth(
 		.text(title)
 		.attr("y", 20)
 		.attr("x", 10);
+
 	//create description
 	const descriptionElement = svg
 		.append("text")
@@ -83,16 +82,17 @@ function Choropleth(
 		.text(description)
 		.attr("y", 50)
 		.attr("x", 20);
-
+	/*
 	//create scale
 	const colorScale = d3
 		.scaleQuantile()
 		.domain(d3.extent(data, dataAccessor))
 		.range(d3.schemeGreens[groups]);
-
+  */
+	/*
 	//create legend data
 	const legendData = [d3.min(data, dataAccessor), ...colorScale.quantiles()];
-
+  
 	//create legend area
 	const legend = svg
 		.append("svg")
@@ -141,72 +141,49 @@ function Choropleth(
 		.attr("transform", `translate(0,${legendPadding.top})`)
 		.call(legendAxis)
 		.call(removeUpperLine);
+  */
 
-	const path = d3.geoPath();
+	const mapArea = svg
+		.append("g")
+		.attr("id", "mapArea")
+		.attr("width", dimensions.width)
+		.attr("height", dimensions.height)
+		.attr("transform", `translate(${padding.left}, ${padding.top})`);
 
+	const countriesArray = map.objects.countries;
+	const countriesFeatureCollection = topojson.feature(map, countriesArray);
+	console.log(countriesFeatureCollection);
+	const projection = d3
+		.geoMercator()
+		.fitSize(
+			[mapArea.attr("width"), mapArea.attr("height")],
+			countriesFeatureCollection
+		);
+	const path = d3.geoPath().projection(projection);
+	/*
 	const tooltip = d3
 		.select("#visHolder")
 		.append("div")
 		.style("opacity", 0)
 		.attr("id", "tooltip")
 		.style("font-size", "16px");
-
-	function countyMouseover(_e, d) {
-		const county = getCountyById(data, "fips", d);
-		tooltip
-			.html(`${county.area_name}: ${county.bachelorsOrHigher}%`)
-			.style("opacity", 1)
-			.attr("data-education", d3.select(this).attr("data-education"));
-		d3.select(this).style("stroke-width", 1);
-		console.log(tooltip.style("left"));
-	}
-	function countyMousemove(e) {
-		tooltip
-			.style("left", d3.pointer(e)[0] + "px")
-			.style("top", d3.pointer(e)[1] + 70 + "px");
-	}
-	function countyMouseleave() {
-		tooltip.style("opacity", 0);
-		d3.select(this).style("stroke-width", 0.1);
-	}
-	const mapArea = svg
-		.append("g")
-		.attr("id", "chartArea")
-		.attr("width", dimensions.width)
-		.attr("height", dimensions.height)
-		.attr("transform", `translate(${padding.left}, ${padding.top})`);
-
-	function getCountyById(counties, id, requestedId) {
-		return counties.find((county) => county[id] === idAccessor(requestedId));
-	}
-	const countiesArray = map.objects.counties;
-	const countiesFeature = topojson.feature(map, countiesArray).features;
-	const counties = mapArea
+  */
+	const countries = mapArea
 		.append("g")
 		.selectAll("path")
-		.data(countiesFeature)
+		.data(countriesFeatureCollection.features)
 		.join("path")
-		.attr("class", "county")
-		.attr("d", path)
-		.attr("stroke", "black")
-		.attr("stroke-width", 0.1)
-		.attr("fill", (d) =>
-			colorScale(dataAccessor(getCountyById(data, "fips", d)))
-		)
-		.attr("data-fips", idAccessor)
-		.attr("data-education", (d) => dataAccessor(getCountyById(data, "fips", d)))
-		.on("mouseover", countyMouseover)
-		.on("mousemove", countyMousemove)
-		.on("mouseleave", countyMouseleave);
+		.attr("class", "country")
+		.attr("d", path);
 
-	const stateMesh = topojson.mesh(map, map.objects.states, (a, b) => a !== b);
-	const stateBorders = mapArea
+	const mesh = topojson.mesh(map, map.objects.countries, (a, b) => a !== b);
+	const borders = mapArea
 		.append("path")
 		.attr("pointer-events", "none")
 		.attr("fill", "none")
 		.attr("stroke", "grey")
-		.attr("stroke-width", 0.5)
+		.attr("stroke-width", 1)
 		.attr("stroke-linecap", "round")
 		.attr("stroke-linejoin", "round")
-		.attr("d", path(stateMesh));
+		.attr("d", path(mesh));
 }
