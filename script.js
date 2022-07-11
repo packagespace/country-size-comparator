@@ -1,7 +1,6 @@
 import { options } from "./options.js";
 
-const SIZE_FILE =
-	"./node_modules/country-json/src/country-by-surface-area.json";
+const SIZE_FILE = "/country-by-surface-area.json";
 const MAP_FILE = "/countries-110m.json";
 
 Promise.all([d3.json(SIZE_FILE), d3.json(MAP_FILE)])
