@@ -24,7 +24,7 @@ export const options = {
 		left: 15,
 	},
 	legendPosition: {
-		x: 1000,
-		y: 500,
+		x: 50,
+		y: 100,
 	},
 };
