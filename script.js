@@ -1,5 +1,17 @@
 import { options } from "./options.js";
 
+const colors = [
+	"#b35806",
+	"#e08214",
+	"#fdb863",
+	"#fee0b6",
+	"#f7f7f7",
+	"#d8daeb",
+	"#b2abd2",
+	"#8073ac",
+	"#542788",
+];
+
 const SIZE_FILE =
 	"./node_modules/country-json/src/country-by-surface-area.json";
 const MAP_FILE = "/countries-110m.json";
@@ -187,9 +199,17 @@ function Choropleth(
 		.attr("d", path)
 		.on("click", countryClick);
 
-	function countryClick(d) {
-		d3.selectAll(".country").attr("fill", "red");
-		d3.select(this).attr("fill", "black");
+	function countryClick(_e, d) {
+		const countrySize = d.size;
+		const extent = d3.extent(countryData, (d) => d.size / countrySize);
+		const colorScale = d3
+			.scaleDiverging()
+			.domain([extent[0], 1, extent[1]])
+			.interpolator(d3.interpolatePuOr);
+		d3.selectAll(".country").attr("fill", (d) =>
+			colorScale(d.size / countrySize)
+		);
+		d3.select(this).attr("fill", "green");
 	}
 
 	const mesh = topojson.mesh(map, map.objects.countries, (a, b) => a !== b);
