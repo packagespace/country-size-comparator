@@ -1,7 +1,7 @@
 import { options } from "./options.js";
 
-const SIZE_FILE = "/country-by-surface-area.json";
-const MAP_FILE = "/countries-110m.json";
+const SIZE_FILE = "./data/country-by-surface-area.json";
+const MAP_FILE = "./data/countries-110m.json";
 
 Promise.all([d3.json(SIZE_FILE), d3.json(MAP_FILE)])
 	.then((data) => Choropleth(data[0], data[1], options))
@@ -80,6 +80,7 @@ function Choropleth(
 		.text(description)
 		.attr("y", 50)
 		.attr("x", 20);
+
 	/*
 	//create legend data
 	const legendData = [d3.min(data, dataAccessor), ...colorScale.quantiles()];
