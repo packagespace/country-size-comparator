@@ -84,8 +84,6 @@ function Choropleth(
 		.attr("x", 20);
 
 	/*
-	//create legend data
-	const legendData = [d3.min(data, dataAccessor), ...colorScale.quantiles()];
   
 	//create legend area
 	const legend = svg
@@ -164,15 +162,8 @@ function Choropleth(
   */
 	const correctedData = dataCorrecter(data);
 	const countryData = getCountryDataWithSize();
-	function getCountryDataWithSize() {
-		return countriesFeatureCollection.features.map((feature) => {
-			const name = feature.properties.name;
-			const dataRow = correctedData.find((row) => row.country === name);
-			const size = dataRow !== undefined ? dataRow.area : undefined;
-			if (size === undefined) console.log(name);
-			return { ...feature, size };
-		});
-	}
+
+	//create legend data
 
 	const countries = mapArea
 		.append("g")
@@ -184,16 +175,29 @@ function Choropleth(
 		.on("click", countryClick);
 
 	function countryClick(_e, d) {
-		const countrySize = d.size;
-		const extent = d3.extent(countryData, (d) => d.size / countrySize);
-		const colorScale = d3
-			.scaleDiverging()
-			.domain([extent[0], 1, extent[1]])
-			.interpolator(d3.interpolatePuOr);
-		d3.selectAll(".country").attr("fill", (d) =>
-			colorScale(d.size / countrySize)
-		);
-		d3.select(this).attr("fill", "green");
+		const selectedCountrySize = d.size;
+		const colorScale = getColorScale();
+		updateCountryColors();
+
+		//make legend
+
+		function getColorScale() {
+			const extent = d3.extent(
+				countryData,
+				(d) => d.size / selectedCountrySize
+			);
+			return d3
+				.scaleDiverging()
+				.domain([extent[0], 1, extent[1]])
+				.interpolator(d3.interpolatePuOr);
+		}
+
+		function updateCountryColors() {
+			d3.selectAll(".country").attr("fill", (d) =>
+				colorScale(d.size / selectedCountrySize)
+			);
+			d3.select(this).attr("fill", "green");
+		}
 	}
 
 	const mesh = topojson.mesh(map, map.objects.countries, (a, b) => a !== b);
@@ -206,4 +210,14 @@ function Choropleth(
 		.attr("stroke-linecap", "round")
 		.attr("stroke-linejoin", "round")
 		.attr("d", path(mesh));
+
+	function getCountryDataWithSize() {
+		return countriesFeatureCollection.features.map((feature) => {
+			const name = feature.properties.name;
+			const dataRow = correctedData.find((row) => row.country === name);
+			const size = dataRow !== undefined ? dataRow.area : undefined;
+			if (size === undefined) console.log(name);
+			return { ...feature, size };
+		});
+	}
 }
