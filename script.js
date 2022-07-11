@@ -130,6 +130,7 @@ function Choropleth(
 		.tickFormat(tickFormat)
 		.tickSizeInner(tickSize)
 		.tickSizeOuter(0);
+	
 
 	const removeUpperLine = (g) => g.select(".domain").remove();
 
@@ -186,7 +187,6 @@ function Choropleth(
 		updateLegend();
 
 		function updateLegend() {
-			const legendYScale = updateLegendYScale();
 			const min = d3.min(colorScale.domain());
 			const max = d3.max(colorScale.domain());
 			const expandedDomain = d3.range(
@@ -194,9 +194,32 @@ function Choropleth(
 				max,
 				(max - min) / legendDimensions.height
 			);
+			const legendYScale = updateLegendYScale();
+			console.log(legendYScale(1));
 			createLegendRectangles();
-
+			createLegendZeroRectangle();
+			/*
+			const legendAxis = d3.axisRight(legendYScale);
+			legendArea
+				.append("g")
+				.attr(
+					"transform",
+					`translate(${legendPadding.left},${legendPadding.top})`
+				)
+				.call(legendAxis);
+					*/
+			function createLegendZeroRectangle() {
+				legendBar.select("#zeroRectangle").remove();
+				legendBar
+					.append("rect")
+					.attr("id", "zeroRectangle")
+					.attr("fill", "black")
+					.attr("height", 1)
+					.attr("width", legendDimensions.width)
+					.attr("y", legendYScale(1));
+			}
 			function createLegendRectangles() {
+				legendBar.selectAll("rect").remove();
 				legendBar
 					.selectAll("rect")
 					.data(expandedDomain)
@@ -209,7 +232,7 @@ function Choropleth(
 			function updateLegendYScale() {
 				return d3
 					.scaleLinear()
-					.domain(colorScale.domain())
+					.domain([min, max])
 					.range([legendDimensions.height, 0]);
 			}
 		}
