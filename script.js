@@ -1,7 +1,7 @@
 import { options } from "./options.js";
 
-const SIZE_FILE = "./data/country-by-surface-area.json";
-const MAP_FILE = "./data/countries-110m.json";
+const SIZE_FILE = "/data/country-by-surface-area.json";
+const MAP_FILE = "/data/countries-110m.json";
 
 Promise.all([d3.json(SIZE_FILE), d3.json(MAP_FILE)])
 	.then((data) => Choropleth(data[0], data[1], options))
