@@ -1,17 +1,5 @@
 import { options } from "./options.js";
 
-const colors = [
-	"#b35806",
-	"#e08214",
-	"#fdb863",
-	"#fee0b6",
-	"#f7f7f7",
-	"#d8daeb",
-	"#b2abd2",
-	"#8073ac",
-	"#542788",
-];
-
 const SIZE_FILE =
 	"./node_modules/country-json/src/country-by-surface-area.json";
 const MAP_FILE = "/countries-110m.json";
