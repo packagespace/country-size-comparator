@@ -173,7 +173,13 @@ function Choropleth(
 		.data(countriesFeatureCollection.features)
 		.join("path")
 		.attr("class", "country")
-		.attr("d", path);
+		.attr("d", path)
+		.on("click", countryClick);
+
+	function countryClick(d) {
+		d3.selectAll(".country").attr("fill", "black");
+		d3.select(this).attr("fill", "red");
+	}
 
 	const mesh = topojson.mesh(map, map.objects.countries, (a, b) => a !== b);
 	const borders = mapArea
