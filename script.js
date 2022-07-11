@@ -195,7 +195,6 @@ function Choropleth(
 				(max - min) / legendDimensions.height
 			);
 			const legendYScale = updateLegendYScale();
-			console.log(legendYScale(1));
 			createLegendRectangles();
 			createLegendZeroRectangle();
 			/*
