@@ -228,7 +228,7 @@ function Choropleth(
 			d3.selectAll(".country")
 				.attr("fill", (d) => colorScale(d.size / selectedCountrySize))
 				.attr("stroke-width", 0);
-			d3.select(e).attr("stroke-width", 5);
+			d3.select(e).attr("stroke-width", 1);
 		}
 	}
 
