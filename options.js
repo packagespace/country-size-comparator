@@ -14,8 +14,8 @@ export const options = {
 		left: 0,
 	},
 	legendDimensions: {
-		width: 250,
-		height: 20,
+		width: 20,
+		height: 250,
 	},
 	legendPadding: {
 		top: 10,

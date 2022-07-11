@@ -45,13 +45,6 @@ function Choropleth(
 	}
 ) {
 	//compute dimensions
-	function getTotalDimensions(dimensions, padding) {
-		return [
-			dimensions.width + padding.left + padding.right,
-			dimensions.height + padding.top + padding.bottom,
-		];
-	}
-
 	const [totalWidth, totalHeight] = getTotalDimensions(dimensions, padding);
 	const [totalLegendWidth, totalLegendHeight] = getTotalDimensions(
 		legendDimensions,
@@ -90,9 +83,20 @@ function Choropleth(
 		.attr("id", "legendArea")
 		.attr("transform", `translate(${legendPosition.x}, ${legendPosition.y})`)
 		.attr("height", totalLegendHeight)
-		.attr("width", totalLegendWidth)
-		.attr("fill", "red");
+		.attr("width", totalLegendWidth);
 
+	//create legend bar x-scale
+	const legendXScale = d3
+		.scaleBand()
+		.domain([0, 1])
+		.range([0, legendDimensions.width]);
+
+	const legendBar = legendArea
+		.append("svg")
+		.attr("id", "legendBar")
+		.attr("transform", `translate(${legendPadding.left}, ${legendPadding.top})`)
+		.attr("height", legendDimensions.height)
+		.attr("width", legendDimensions.width);
 	/*
 	//compute legend rectangles dimensions and position
 	const legendRectWidth = legendDimensions.width / legendData.length;
@@ -177,13 +181,44 @@ function Choropleth(
 		const selectedCountrySize = d.size;
 		const colorScale = getColorScale();
 		updateCountryColors(this);
+
+		updateLegend();
+
+		function updateLegend() {
+			const legendYScale = updateLegendYScale();
+			const min = d3.min(colorScale.domain());
+			const max = d3.max(colorScale.domain());
+			const expandedDomain = d3.range(
+				min,
+				max,
+				(max - min) / legendDimensions.height
+			);
+			createLegendRectangles();
+
+			function createLegendRectangles() {
+				legendBar
+					.selectAll("rect")
+					.data(expandedDomain)
+					.join("rect")
+					.attr("fill", colorScale)
+					.attr("height", 1)
+					.attr("width", legendDimensions.width)
+					.attr("y", (_d, i) => legendDimensions.height - i);
+			}
+			function updateLegendYScale() {
+				return d3
+					.scaleLinear()
+					.domain(colorScale.domain())
+					.range([legendDimensions.height, 0]);
+			}
+		}
 		function getColorScale() {
 			const extent = d3.extent(
 				countryData,
 				(d) => d.size / selectedCountrySize
 			);
 			return d3
-				.scaleDiverging()
+				.scaleDivergingSymlog()
 				.domain([extent[0], 1, extent[1]])
 				.interpolator(d3.interpolatePuOr);
 		}
@@ -212,8 +247,16 @@ function Choropleth(
 			const name = feature.properties.name;
 			const dataRow = correctedData.find((row) => row.country === name);
 			const size = dataRow !== undefined ? dataRow.area : undefined;
-			if (size === undefined) console.log(name);
+			//for wrong names
+			//if (size === undefined) console.log(name);
 			return { ...feature, size };
 		});
+	}
+
+	function getTotalDimensions(dimensions, padding) {
+		return [
+			dimensions.width + padding.left + padding.right,
+			dimensions.height + padding.top + padding.bottom,
+		];
 	}
 }
