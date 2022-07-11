@@ -1,5 +1,6 @@
 import { options } from "./options.js";
 import { dataCorrecter } from "./dataCorrecter.js";
+import { Legend } from "./legend.js";
 const SIZE_FILE =
 	"https://raw.githubusercontent.com/samayo/country-json/master/src/country-by-surface-area.json";
 const MAP_FILE =
@@ -163,8 +164,6 @@ function Choropleth(
 	const correctedData = dataCorrecter(data);
 	const countryData = getCountryDataWithSize();
 
-	//create legend data
-
 	const countries = mapArea
 		.append("g")
 		.selectAll("path")
@@ -177,9 +176,14 @@ function Choropleth(
 	function countryClick(_e, d) {
 		const selectedCountrySize = d.size;
 		const colorScale = getColorScale();
-		updateCountryColors();
+		updateCountryColors(this);
+		//make legend data
 
-		//make legend
+		const legendData = getLegendData();
+
+		function getLegendData() {
+			const domain = colorScale.domain();
+		}
 
 		function getColorScale() {
 			const extent = d3.extent(
@@ -192,11 +196,11 @@ function Choropleth(
 				.interpolator(d3.interpolatePuOr);
 		}
 
-		function updateCountryColors() {
+		function updateCountryColors(e) {
 			d3.selectAll(".country").attr("fill", (d) =>
 				colorScale(d.size / selectedCountrySize)
 			);
-			d3.select(this).attr("fill", "green");
+			d3.select(e).attr("fill", "green");
 		}
 	}
 
