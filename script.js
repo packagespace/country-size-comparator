@@ -1,5 +1,5 @@
 import { options } from "./options.js";
-
+import { dataCorrecter } from "./dataCorrecter.js";
 const SIZE_FILE =
 	"https://raw.githubusercontent.com/samayo/country-json/master/src/country-by-surface-area.json";
 const MAP_FILE =
@@ -162,13 +162,15 @@ function Choropleth(
 		.attr("id", "tooltip")
 		.style("font-size", "16px");
   */
-
+	const correctedData = dataCorrecter(data);
+	//	console.log(data, correctedData);
 	const countryData = getCountryDataWithSize();
 	function getCountryDataWithSize() {
 		return countriesFeatureCollection.features.map((feature) => {
 			const name = feature.properties.name;
-			const dataRow = data.find((row) => row.country === name);
+			const dataRow = correctedData.find((row) => row.country === name);
 			const size = dataRow !== undefined ? dataRow.area : undefined;
+			if (size === undefined) console.log(name);
 			return { ...feature, size };
 		});
 	}
