@@ -25,6 +25,6 @@ export const options = {
 	},
 	legendPosition: {
 		x: 50,
-		y: 100,
+		y: 500,
 	},
 };
