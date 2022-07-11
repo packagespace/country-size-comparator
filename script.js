@@ -42,7 +42,6 @@ function Choropleth(
 		},
 	}
 ) {
-	console.log(map);
 	//compute dimensions
 	function getTotalDimensions(dimensions, padding) {
 		return [
@@ -152,7 +151,7 @@ function Choropleth(
 
 	const countriesArray = map.objects.countries;
 	const countriesFeatureCollection = topojson.feature(map, countriesArray);
-	console.log(countriesFeatureCollection);
+
 	const projection = d3
 		.geoMercator()
 		.fitSize(
