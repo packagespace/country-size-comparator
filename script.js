@@ -7,10 +7,10 @@ const MAP_FILE =
 	"https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
 
 Promise.all([d3.json(SIZE_FILE), d3.json(MAP_FILE)])
-	.then((data) => Choropleth(data[0], data[1], options))
+	.then((data) => CountrySizeComparator(data[0], data[1], options))
 	.catch((err) => console.error(err.message, err.lineNumber, err.fileName));
 
-function Choropleth(
+function CountrySizeComparator(
 	data,
 	map,
 	{
