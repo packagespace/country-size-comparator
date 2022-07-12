@@ -92,13 +92,9 @@ function Choropleth(
 	function createMap() {
 		const mapArea = createMapArea();
 
-		const projection = d3
-			.geoMercator()
-			.fitSize(
-				[mapArea.attr("width"), mapArea.attr("height")],
-				countriesFeatureCollection
-			);
-		const path = d3.geoPath().projection(projection);
+		const projection = getProjection();
+
+		const path = getPath();
 
 		const countries = mapArea
 			.append("g")
@@ -132,6 +128,17 @@ function Choropleth(
 				.attr("transform", `translate(${padding.left}, ${padding.top})`);
 		}
 
+		function getPath() {
+			return d3.geoPath().projection(projection);
+		}
+		function getProjection() {
+			return d3
+				.geoMercator()
+				.fitSize(
+					[mapArea.attr("width"), mapArea.attr("height")],
+					countriesFeatureCollection
+				);
+		}
 		function countryMouseover(_e, d) {
 			const hoveredCountry = {
 				name: d.properties.name,
