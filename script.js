@@ -160,13 +160,16 @@ function Choropleth(
 		function countryMouseover(_e, d) {
 			const hoveredCountry = {
 				name: d.properties.name,
-				size: d.properties.size,
+				size: d.size,
 			};
 			tooltip
 				.html(
-					`${hoveredCountry.name}: ${d3.format(".0%")(
-						d.size / selectedCountry.size
-					)}% of the size of ${selectedCountry.name}`
+					`${hoveredCountry.name}: ${d3.format(",.3r")(
+						hoveredCountry.size
+					)} km2 <br />
+					${d3.format(".0%")(d.size / selectedCountry.size)} of the size of ${
+						selectedCountry.name
+					} (${d3.format(",.3r")(selectedCountry.size)} km2)`
 				)
 				.style("opacity", 1)
 				.attr("data-education", d3.select(this).attr("data-education"));
