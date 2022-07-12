@@ -226,7 +226,6 @@ function CountrySizeComparator(
 						...d3.range(min, 1, (1 - min) / (legendDimensions.height / 2)),
 						...d3.range(1, max, (max - 1) / (legendDimensions.height / 2)),
 					];
-					console.log(expandedDomain);
 					legendYScale = updateLegendYScale();
 					createLegendRectangles();
 					createLegendZeroRectangle();
@@ -238,7 +237,7 @@ function CountrySizeComparator(
 							.axisLeft(legendYScale)
 							.tickFormat(d3.format(".0%"))
 							.tickSizeOuter(0)
-							.tickValues([0.1, 0.25, 0.5, 1, 1.5, 2, 3]);
+							.tickValues([0.1, 0.25, 0.5, 1, Math.sqrt(max), max]);
 
 						//const removeUpperLine = (g) => g.select(".domain").remove();
 
