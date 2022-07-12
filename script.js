@@ -46,6 +46,7 @@ function Choropleth(
 ) {
 	//state
 	let selectedCountry = undefined;
+	let legendYScale = undefined;
 
 	//compute dimensions
 	const [totalWidth, totalHeight] = getTotalDimensions(dimensions, padding);
@@ -145,6 +146,19 @@ function Choropleth(
 				size: d.size,
 			};
 			editTooltip();
+			createLegendMarker();
+
+			function createLegendMarker() {
+				const legendBar = d3.select("#legendBar");
+				legendBar.select("#markerRectangle").remove();
+				legendBar
+					.append("rect")
+					.attr("id", "markerRectangle")
+					.attr("fill", "black")
+					.attr("height", 1)
+					.attr("width", legendDimensions.width)
+					.attr("y", legendYScale(d.size / selectedCountry.size));
+			}
 
 			function editTooltip() {
 				let html;
@@ -197,7 +211,7 @@ function Choropleth(
 					...d3.range(1, max, (max - 1) / (legendDimensions.height / 2)),
 				];
 				console.log(expandedDomain);
-				const legendYScale = updateLegendYScale();
+				legendYScale = updateLegendYScale();
 				createLegendRectangles();
 				createLegendZeroRectangle();
 				/*
@@ -212,7 +226,6 @@ function Choropleth(
 					*/
 				function createLegendZeroRectangle() {
 					legendBar.select("#zeroRectangle").remove();
-					console.log(legendYScale(1));
 					legendBar
 						.append("rect")
 						.attr("id", "zeroRectangle")
