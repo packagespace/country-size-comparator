@@ -44,6 +44,10 @@ function Choropleth(
 		},
 	}
 ) {
+	let selectedCountry = {
+		name: undefined,
+		size: undefined,
+	};
 	//compute dimensions
 	const [totalWidth, totalHeight] = getTotalDimensions(dimensions, padding);
 	const [totalLegendWidth, totalLegendHeight] = getTotalDimensions(
@@ -158,14 +162,14 @@ function Choropleth(
 			countriesFeatureCollection
 		);
 	const path = d3.geoPath().projection(projection);
-	/*
+
 	const tooltip = d3
 		.select("#visHolder")
 		.append("div")
 		.style("opacity", 0)
 		.attr("id", "tooltip")
 		.style("font-size", "16px");
-  */
+
 	const correctedData = dataCorrecter(data);
 	const countryData = getCountryDataWithSize();
 
@@ -177,10 +181,40 @@ function Choropleth(
 		.attr("class", "country")
 		.attr("d", path)
 		.on("click", countryClick)
+		.on("mouseover", countryMouseover)
+		.on("mousemove", countryMousemove)
+		.on("mouseleave", countryMouseleave)
 		.attr("stroke", "black");
 
+	function countryMouseover(_e, d) {
+		const hoveredCountrySize = d.size;
+		const hoveredCountryName = d.properties.name;
+		tooltip
+			.html(
+				`${hoveredCountryName}: ${(d.size / selectedCountry.size) * 100}% of ${
+					selectedCountry.name
+				}`
+			)
+			.style("opacity", 1)
+			.attr("data-education", d3.select(this).attr("data-education"));
+	}
+
+	function countryMousemove(e) {
+		tooltip
+			.style("left", d3.pointer(e)[0] + 20 + "px")
+			.style("top", d3.pointer(e)[1] - 50 + "px");
+	}
+
+	function countryMouseleave() {
+		tooltip.style("opacity", 0);
+		d3.select(this).style("stroke-width", 0.1);
+	}
+
 	function countryClick(_e, d) {
-		const selectedCountrySize = d.size;
+		selectedCountry = {
+			name: d.properties.name,
+			size: d.size,
+		};
 		const colorScale = getColorScale();
 		updateCountryColors(this);
 
@@ -206,7 +240,7 @@ function Choropleth(
 					`translate(${legendPadding.left},${legendPadding.top})`
 				)
 				.call(legendAxis);
-					*/
+			*/
 			function createLegendZeroRectangle() {
 				legendBar.select("#zeroRectangle").remove();
 				legendBar
@@ -238,7 +272,7 @@ function Choropleth(
 		function getColorScale() {
 			const extent = d3.extent(
 				countryData,
-				(d) => d.size / selectedCountrySize
+				(d) => d.size / selectedCountry.size
 			);
 			return d3
 				.scaleDiverging()
@@ -248,7 +282,7 @@ function Choropleth(
 
 		function updateCountryColors(e) {
 			d3.selectAll(".country")
-				.attr("fill", (d) => colorScale(d.size / selectedCountrySize))
+				.attr("fill", (d) => colorScale(d.size / selectedCountry.size))
 				.attr("stroke-width", 0);
 			d3.select(e).attr("stroke-width", 1);
 		}
