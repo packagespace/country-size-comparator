@@ -144,17 +144,28 @@ function Choropleth(
 				name: d.properties.name,
 				size: d.size,
 			};
-			tooltip
-				.html(
-					`${hoveredCountry.name}: ${d3.format(",.3r")(
+			editTooltip();
+
+			function editTooltip() {
+				let html;
+				if (selectedCountry) {
+					html = `${hoveredCountry.name}: ${d3.format(",.3r")(
 						hoveredCountry.size
 					)} km2 <br />
-					${d3.format(".0%")(d.size / selectedCountry.size)} of the size of ${
+		${d3.format(".0%")(d.size / selectedCountry.size)} of the size of ${
 						selectedCountry.name
-					} (${d3.format(",.3r")(selectedCountry.size)} km2)`
-				)
-				.style("opacity", 1)
-				.attr("data-education", d3.select(this).attr("data-education"));
+					} (${d3.format(",.3r")(selectedCountry.size)} km2)`;
+				} else {
+					html = `${hoveredCountry.name}: ${d3.format(",.3r")(
+						hoveredCountry.size
+					)} km2`;
+				}
+				changeTooltipContents(html);
+
+				function changeTooltipContents(html) {
+					tooltip.html(html).style("opacity", 1);
+				}
+			}
 		}
 
 		function countryMousemove(e) {
