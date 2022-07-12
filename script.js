@@ -74,24 +74,6 @@ function CountrySizeComparator(
 		.style("opacity", 0)
 		.attr("id", "tooltip")
 		.style("font-size", "16px");
-	/*
-
-	const legendAxis = d3
-		.axisBottom(legendScale)
-		.tickValues(tickValues)
-		.tickFormat(tickFormat)
-		.tickSizeInner(tickSize)
-		.tickSizeOuter(0);
-	
-
-	const removeUpperLine = (g) => g.select(".domain").remove();
-
-	legend
-		.append("g")
-		.attr("transform", `translate(0,${legendPadding.top})`)
-		.call(legendAxis)
-		.call(removeUpperLine);
-  */
 
 	const mapElement = createMap();
 
@@ -248,6 +230,27 @@ function CountrySizeComparator(
 					createLegendRectangles();
 					createLegendZeroRectangle();
 					createLegendLabel();
+					createLegendAxis();
+					function createLegendAxis() {
+						d3.select("#legendAxis").remove();
+						const legendAxis = d3
+							.axisLeft(legendYScale)
+							.tickFormat(d3.format(".0%"))
+							.tickSizeOuter(0)
+							.tickValues([0.1, 0.25, 0.5, 1]);
+
+						//const removeUpperLine = (g) => g.select(".domain").remove();
+
+						d3.select("#legendArea")
+							.append("g")
+							.attr(
+								"transform",
+								`translate(${legendPadding.left},${legendPadding.top})`
+							)
+							.call(legendAxis)
+							.attr("id", "legendAxis");
+					}
+
 					function createLegendLabel() {
 						d3.select("#zeroRectangleLabel").remove();
 						d3.select("#legendArea")
@@ -257,16 +260,7 @@ function CountrySizeComparator(
 							.attr("y", legendYScale(1) + legendPadding.top)
 							.attr("x", legendPadding.left + legendDimensions.width);
 					}
-					/*
-							const legendAxis = d3.axisRight(legendYScale);
-							legendArea
-								.append("g")
-								.attr(
-									"transform",
-									`translate(${legendPadding.left},${legendPadding.top})`
-								)
-								.call(legendAxis);
-							*/
+
 					function createLegendZeroRectangle() {
 						legendBar.select("#zeroRectangle").remove();
 						legendBar
