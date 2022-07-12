@@ -216,6 +216,7 @@ function CountrySizeComparator(
 				updateCountryColors(this);
 
 				updateLegend();
+				countryMouseover(_e, d);
 
 				function updateLegend() {
 					const legendBar = d3.select("#legendBar");
