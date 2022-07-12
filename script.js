@@ -69,31 +69,6 @@ function Choropleth(
 	const legendElement = createLegend();
 
 	/*
-	//compute legend rectangles dimensions and position
-	const legendRectWidth = legendDimensions.width / legendData.length;
-	const legendRectHeight = legendDimensions.height - 10;
-	const legendRectX = (_d, i) => legendPadding.left + legendRectWidth * i;
-	const legendRectY = legendPadding.top;
-
-	//create legend rectangles
-	const legendRects = legend
-		.selectAll("rect")
-		.data(legendData)
-		.join("rect")
-		.attr("fill", colorScale)
-		.attr("width", legendRectWidth)
-		.attr("height", legendRectHeight)
-		.attr("x", legendRectX)
-		.attr("y", legendRectY);
-
-	//create legend scale
-	const tickValues = [...legendData, d3.max(data, dataAccessor)];
-	const tickFormat = (x) => Math.round(x) + "%";
-	const tickSize = legendRectHeight;
-	const legendScale = d3
-		.scaleLinear()
-		.domain(d3.extent(tickValues))
-		.range([legendPadding.left, legendDimensions.width + legendPadding.left]);
 
 	const legendAxis = d3
 		.axisBottom(legendScale)
