@@ -236,18 +236,22 @@ function CountrySizeComparator(
 						const legendAxis = d3
 							.axisLeft(legendYScale)
 							.tickFormat(d3.format(".0%"))
+							.tickSizeInner(legendDimensions.width + 5)
 							.tickSizeOuter(0)
 							.tickValues([0.1, 0.25, 0.5, 1, Math.sqrt(max), max]);
 
-						//const removeUpperLine = (g) => g.select(".domain").remove();
+						const removeLeftLine = (g) => g.select(".domain").remove();
 
 						d3.select("#legendArea")
 							.append("g")
 							.attr(
 								"transform",
-								`translate(${legendPadding.left},${legendPadding.top})`
+								`translate(${legendPadding.left + legendDimensions.width},${
+									legendPadding.top
+								})`
 							)
 							.call(legendAxis)
+							.call(removeLeftLine)
 							.attr("id", "legendAxis");
 					}
 
