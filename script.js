@@ -199,11 +199,11 @@ function Choropleth(
 				const legendBar = d3.select("#legendBar");
 				const min = d3.min(colorScale.domain());
 				const max = d3.max(colorScale.domain());
-				const expandedDomain = d3.range(
-					min,
-					max,
-					(max - min) / legendDimensions.height
-				);
+				const expandedDomain = [
+					...d3.range(min, 1, ((1 - min) / legendDimensions.height) * 2),
+					...d3.range(1, max, ((max - 1) / legendDimensions.height) * 2),
+				];
+				console.log(expandedDomain);
 				const legendYScale = updateLegendYScale();
 				createLegendRectangles();
 				createLegendZeroRectangle();
@@ -250,9 +250,14 @@ function Choropleth(
 					countryData,
 					(d) => d.size / selectedCountry.size
 				);
+				const symmetricalExtent =
+					1 / extent[0] > extent[1]
+						? [extent[0], 1 / extent[0]]
+						: [1 / extent[1], extent[1]];
+				console.log(symmetricalExtent);
 				return d3
-					.scaleDiverging()
-					.domain([extent[0], 1, extent[1]])
+					.scaleDivergingSymlog()
+					.domain([symmetricalExtent[0], 1, symmetricalExtent[1]])
 					.interpolator(d3.interpolatePuOr);
 			}
 
