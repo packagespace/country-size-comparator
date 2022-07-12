@@ -186,7 +186,7 @@ function CountrySizeComparator(
 						html = `${hoveredCountry.name}: ${d3.format(",.3r")(
 							hoveredCountry.size
 						)} km2 <br />
-				${d3.format(".0%")(d.size / selectedCountry.size)} of the size of ${
+				${d3.format(",.1%")(d.size / selectedCountry.size)} of the size of ${
 							selectedCountry.name
 						} (${d3.format(",.3r")(selectedCountry.size)} km2)`;
 					}
@@ -237,7 +237,7 @@ function CountrySizeComparator(
 							.axisLeft(legendYScale)
 							.tickFormat(d3.format(".0%"))
 							.tickSizeOuter(0)
-							.tickValues([0.1, 0.25, 0.5, 1]);
+							.tickValues([0.1, 0.25, 0.5, 1, 1.5, 2, 3]);
 
 						//const removeUpperLine = (g) => g.select(".domain").remove();
 
