@@ -10,3 +10,4 @@
 - Make map zoomable
 - Fix missing data
 - Animations
+- Fix double display of country name in legend when hover over selected country
