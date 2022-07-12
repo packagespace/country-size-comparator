@@ -18,13 +18,13 @@ export const options = {
 		height: 250,
 	},
 	legendPadding: {
-		top: 10,
-		right: 100,
-		bottom: 10,
-		left: 15,
+		top: 30,
+		right: 300,
+		bottom: 30,
+		left: 20,
 	},
 	legendPosition: {
 		x: 50,
-		y: 500,
+		y: 450,
 	},
 };

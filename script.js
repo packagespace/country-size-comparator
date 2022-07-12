@@ -161,6 +161,7 @@ function CountrySizeComparator(
 				};
 				editTooltip();
 				createLegendMarker();
+				createLegendMarkerLabel();
 				function createLegendMarker() {
 					const legendBar = d3.select("#legendBar");
 					legendBar.select("#markerRectangle").remove();
@@ -170,7 +171,24 @@ function CountrySizeComparator(
 						.attr("fill", "black")
 						.attr("height", 1)
 						.attr("width", legendDimensions.width)
-						.attr("y", legendYScale(d.size / selectedCountry.size));
+						.attr(
+							"y",
+							legendYScale(hoveredCountry.size / selectedCountry.size)
+						);
+				}
+
+				function createLegendMarkerLabel() {
+					d3.select("#markerLabel").remove();
+					d3.select("#legendArea")
+						.append("text")
+						.attr("id", "markerLabel")
+						.text(hoveredCountry.name)
+						.attr(
+							"y",
+							legendYScale(hoveredCountry.size / selectedCountry.size) +
+								legendPadding.top
+						)
+						.attr("x", legendPadding.left + legendDimensions.width);
 				}
 
 				function editTooltip() {
@@ -229,6 +247,16 @@ function CountrySizeComparator(
 					legendYScale = updateLegendYScale();
 					createLegendRectangles();
 					createLegendZeroRectangle();
+					createLegendLabel();
+					function createLegendLabel() {
+						d3.select("#zeroRectangleLabel").remove();
+						d3.select("#legendArea")
+							.append("text")
+							.attr("id", "zeroRectangleLabel")
+							.text(selectedCountry.name)
+							.attr("y", legendYScale(1) + legendPadding.top)
+							.attr("x", legendPadding.left + legendDimensions.width);
+					}
 					/*
 							const legendAxis = d3.axisRight(legendYScale);
 							legendArea
