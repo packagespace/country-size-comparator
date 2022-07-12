@@ -19,7 +19,7 @@ export const options = {
 	},
 	legendPadding: {
 		top: 10,
-		right: 15,
+		right: 100,
 		bottom: 10,
 		left: 15,
 	},
