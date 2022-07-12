@@ -55,52 +55,13 @@ function Choropleth(
 		legendPadding
 	);
 
-	//create svg
-	const svg = d3
-		.select(`#${targetId}`)
-		.append("svg")
-		.attr("id", chartId)
-		.attr("width", totalWidth)
-		.attr("height", totalHeight)
-		.attr("viewBox", [0, 0, totalWidth, totalHeight])
-		.attr("style", "width: 100%; height: auto; height: intrinsic;");
+	const svg = createSvg();
 
-	//create title
-	const titleElement = svg
-		.append("text")
-		.attr("id", "title")
-		.text(title)
-		.attr("y", 20)
-		.attr("x", 10);
+	const titleElement = createTitle();
 
-	//create description
-	const descriptionElement = svg
-		.append("text")
-		.attr("id", "description")
-		.text(description)
-		.attr("y", 50)
-		.attr("x", 20);
+	const descriptionElement = createDescription();
+	const legendElement = createLegend();
 
-	//create legend area
-	const legendArea = svg
-		.append("svg")
-		.attr("id", "legendArea")
-		.attr("transform", `translate(${legendPosition.x}, ${legendPosition.y})`)
-		.attr("height", totalLegendHeight)
-		.attr("width", totalLegendWidth);
-
-	//create legend bar x-scale
-	const legendXScale = d3
-		.scaleBand()
-		.domain([0, 1])
-		.range([0, legendDimensions.width]);
-
-	const legendBar = legendArea
-		.append("svg")
-		.attr("id", "legendBar")
-		.attr("transform", `translate(${legendPadding.left}, ${legendPadding.top})`)
-		.attr("height", legendDimensions.height)
-		.attr("width", legendDimensions.width);
 	/*
 	//compute legend rectangles dimensions and position
 	const legendRectWidth = legendDimensions.width / legendData.length;
@@ -221,6 +182,7 @@ function Choropleth(
 		updateLegend();
 
 		function updateLegend() {
+			const legendBar = d3.select("#legendBar");
 			const min = d3.min(colorScale.domain());
 			const max = d3.max(colorScale.domain());
 			const expandedDomain = d3.range(
@@ -314,5 +276,67 @@ function Choropleth(
 			dimensions.width + padding.left + padding.right,
 			dimensions.height + padding.top + padding.bottom,
 		];
+	}
+
+	function createSvg() {
+		return d3
+			.select(`#${targetId}`)
+			.append("svg")
+			.attr("id", chartId)
+			.attr("width", totalWidth)
+			.attr("height", totalHeight)
+			.attr("viewBox", [0, 0, totalWidth, totalHeight])
+			.attr("style", "width: 100%; height: auto; height: intrinsic;");
+	}
+
+	function createTitle() {
+		return svg
+			.append("text")
+			.attr("id", "title")
+			.text(title)
+			.attr("y", 20)
+			.attr("x", 10);
+	}
+
+	function createDescription() {
+		return svg
+			.append("text")
+			.attr("id", "description")
+			.text(description)
+			.attr("y", 50)
+			.attr("x", 20);
+	}
+
+	function createLegend() {
+		const legendArea = createLegendArea();
+		const legendXScale = getLegendXScale();
+		const legendBarArea = createLegendBarArea();
+		function getLegendXScale() {
+			return d3.scaleBand().domain([0, 1]).range([0, legendDimensions.width]);
+		}
+		function createLegendBarArea() {
+			return legendArea
+				.append("svg")
+				.attr("id", "legendBar")
+				.attr(
+					"transform",
+					`translate(${legendPadding.left}, ${legendPadding.top})`
+				)
+				.attr("height", legendDimensions.height)
+				.attr("width", legendDimensions.width);
+		}
+		function createLegendArea() {
+			return svg
+				.append("svg")
+				.attr("id", "legendArea")
+				.attr(
+					"transform",
+					`translate(${legendPosition.x}, ${legendPosition.y})`
+				)
+				.attr("height", totalLegendHeight)
+				.attr("width", totalLegendWidth);
+		}
+
+		return legendArea;
 	}
 }
