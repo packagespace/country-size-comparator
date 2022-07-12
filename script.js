@@ -45,10 +45,7 @@ function Choropleth(
 	}
 ) {
 	//state
-	let selectedCountry = {
-		name: undefined,
-		size: undefined,
-	};
+	let selectedCountry = undefined;
 
 	//compute dimensions
 	const [totalWidth, totalHeight] = getTotalDimensions(dimensions, padding);
@@ -161,13 +158,15 @@ function Choropleth(
 		}
 
 		function countryMouseover(_e, d) {
-			const hoveredCountrySize = d.size;
-			const hoveredCountryName = d.properties.name;
+			const hoveredCountry = {
+				name: d.properties.name,
+				size: d.properties.size,
+			};
 			tooltip
 				.html(
-					`${hoveredCountryName}: ${
-						(d.size / selectedCountry.size) * 100
-					}% of ${selectedCountry.name}`
+					`${hoveredCountry.name}: ${d3.format(".0%")(
+						d.size / selectedCountry.size
+					)}% of the size of ${selectedCountry.name}`
 				)
 				.style("opacity", 1)
 				.attr("data-education", d3.select(this).attr("data-education"));
