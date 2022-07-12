@@ -68,7 +68,12 @@ function CountrySizeComparator(
 
 	const descriptionElement = createDescription();
 	const legendElement = createLegend();
-
+	const tooltip = d3
+		.select("#visHolder")
+		.append("div")
+		.style("opacity", 0)
+		.attr("id", "tooltip")
+		.style("font-size", "16px");
 	/*
 
 	const legendAxis = d3
@@ -97,28 +102,9 @@ function CountrySizeComparator(
 
 		const path = getPath();
 
-		const countries = mapArea
-			.append("g")
-			.selectAll("path")
-			.data(countryData)
-			.join("path")
-			.attr("class", "country")
-			.attr("d", path)
-			.on("click", countryClick)
-			.on("mouseover", countryMouseover)
-			.on("mousemove", countryMousemove)
-			.on("mouseleave", countryMouseleave)
-			.attr("stroke", "black");
+		const countries = createCountries();
 
-		const mesh = topojson.mesh(map, map.objects.countries, (a, b) => a !== b);
-		const borders = mapArea
-			.append("path")
-			.attr("fill", "none")
-			.attr("stroke", "grey")
-			.attr("stroke-width", 1)
-			.attr("stroke-linecap", "round")
-			.attr("stroke-linejoin", "round")
-			.attr("d", path(mesh));
+		const borders = createBorders();
 
 		function createMapArea() {
 			return svg
@@ -129,9 +115,6 @@ function CountrySizeComparator(
 				.attr("transform", `translate(${padding.left}, ${padding.top})`);
 		}
 
-		function getPath() {
-			return d3.geoPath().projection(projection);
-		}
 		function getProjection() {
 			return d3
 				.geoMercator()
@@ -140,145 +123,172 @@ function CountrySizeComparator(
 					countriesFeatureCollection
 				);
 		}
-		function countryMouseover(_e, d) {
-			const hoveredCountry = {
-				name: d.properties.name,
-				size: d.size,
-			};
-			editTooltip();
-			createLegendMarker();
 
-			function createLegendMarker() {
-				const legendBar = d3.select("#legendBar");
-				legendBar.select("#markerRectangle").remove();
-				legendBar
-					.append("rect")
-					.attr("id", "markerRectangle")
-					.attr("fill", "black")
-					.attr("height", 1)
-					.attr("width", legendDimensions.width)
-					.attr("y", legendYScale(d.size / selectedCountry.size));
-			}
-
-			function editTooltip() {
-				let html;
-				if (selectedCountry) {
-					html = `${hoveredCountry.name}: ${d3.format(",.3r")(
-						hoveredCountry.size
-					)} km2 <br />
-		${d3.format(".0%")(d.size / selectedCountry.size)} of the size of ${
-						selectedCountry.name
-					} (${d3.format(",.3r")(selectedCountry.size)} km2)`;
-				} else {
-					html = `${hoveredCountry.name}: ${d3.format(",.3r")(
-						hoveredCountry.size
-					)} km2`;
-				}
-				changeTooltipContents(html);
-
-				function changeTooltipContents(html) {
-					tooltip.html(html).style("opacity", 1);
-				}
-			}
+		function getPath() {
+			return d3.geoPath().projection(projection);
 		}
 
-		function countryMousemove(e) {
-			tooltip
-				.style("left", d3.pointer(e)[0] + 20 + "px")
-				.style("top", d3.pointer(e)[1] - 50 + "px");
+		function createBorders() {
+			const mesh = topojson.mesh(map, map.objects.countries, (a, b) => a !== b);
+			mapArea
+				.append("path")
+				.attr("fill", "none")
+				.attr("stroke", "grey")
+				.attr("stroke-width", 1)
+				.attr("stroke-linecap", "round")
+				.attr("stroke-linejoin", "round")
+				.attr("d", path(mesh));
 		}
 
-		function countryMouseleave() {
-			tooltip.style("opacity", 0);
-		}
+		function createCountries() {
+			return mapArea
+				.append("g")
+				.selectAll("path")
+				.data(countryData)
+				.join("path")
+				.attr("class", "country")
+				.attr("d", path)
+				.on("click", countryClick)
+				.on("mouseover", countryMouseover)
+				.on("mousemove", countryMousemove)
+				.on("mouseleave", countryMouseleave)
+				.attr("stroke", "black");
 
-		function countryClick(_e, d) {
-			selectedCountry = {
-				name: d.properties.name,
-				size: d.size,
-			};
-			const colorScale = getColorScale();
-			updateCountryColors(this);
-
-			updateLegend();
-
-			function updateLegend() {
-				const legendBar = d3.select("#legendBar");
-				const min = d3.min(colorScale.domain());
-				const max = d3.max(colorScale.domain());
-				const expandedDomain = [
-					...d3.range(min, 1, (1 - min) / (legendDimensions.height / 2)),
-					...d3.range(1, max, (max - 1) / (legendDimensions.height / 2)),
-				];
-				console.log(expandedDomain);
-				legendYScale = updateLegendYScale();
-				createLegendRectangles();
-				createLegendZeroRectangle();
-				/*
-					const legendAxis = d3.axisRight(legendYScale);
-					legendArea
-						.append("g")
-						.attr(
-							"transform",
-							`translate(${legendPadding.left},${legendPadding.top})`
-						)
-						.call(legendAxis);
-					*/
-				function createLegendZeroRectangle() {
-					legendBar.select("#zeroRectangle").remove();
+			function countryMouseover(_e, d) {
+				const hoveredCountry = {
+					name: d.properties.name,
+					size: d.size,
+				};
+				editTooltip();
+				createLegendMarker();
+				function createLegendMarker() {
+					const legendBar = d3.select("#legendBar");
+					legendBar.select("#markerRectangle").remove();
 					legendBar
 						.append("rect")
-						.attr("id", "zeroRectangle")
+						.attr("id", "markerRectangle")
 						.attr("fill", "black")
 						.attr("height", 1)
 						.attr("width", legendDimensions.width)
-						.attr("y", legendYScale(1));
+						.attr("y", legendYScale(d.size / selectedCountry.size));
 				}
-				function createLegendRectangles() {
-					legendBar.selectAll("rect").remove();
-					legendBar
-						.selectAll("rect")
-						.data(expandedDomain)
-						.join("rect")
-						.attr("fill", colorScale)
-						.attr("height", 1)
-						.attr("width", legendDimensions.width)
-						.attr("y", (_d, i) => legendDimensions.height - i);
+
+				function editTooltip() {
+					let html;
+					if (
+						!selectedCountry ||
+						selectedCountry.name === hoveredCountry.name
+					) {
+						html = `${hoveredCountry.name}: ${d3.format(",.3r")(
+							hoveredCountry.size
+						)} km2`;
+					} else {
+						html = `${hoveredCountry.name}: ${d3.format(",.3r")(
+							hoveredCountry.size
+						)} km2 <br />
+				${d3.format(".0%")(d.size / selectedCountry.size)} of the size of ${
+							selectedCountry.name
+						} (${d3.format(",.3r")(selectedCountry.size)} km2)`;
+					}
+					changeTooltipContents(html);
+
+					function changeTooltipContents(html) {
+						tooltip.html(html).style("opacity", 1);
+					}
 				}
-				function updateLegendYScale() {
+			}
+			function countryMousemove(e) {
+				tooltip
+					.style("left", d3.pointer(e)[0] + 20 + "px")
+					.style("top", d3.pointer(e)[1] - 50 + "px");
+			}
+
+			function countryMouseleave() {
+				tooltip.style("opacity", 0);
+			}
+
+			function countryClick(_e, d) {
+				selectedCountry = {
+					name: d.properties.name,
+					size: d.size,
+				};
+				const colorScale = getColorScale();
+				updateCountryColors(this);
+
+				updateLegend();
+
+				function updateLegend() {
+					const legendBar = d3.select("#legendBar");
+					const min = d3.min(colorScale.domain());
+					const max = d3.max(colorScale.domain());
+					const expandedDomain = [
+						...d3.range(min, 1, (1 - min) / (legendDimensions.height / 2)),
+						...d3.range(1, max, (max - 1) / (legendDimensions.height / 2)),
+					];
+					console.log(expandedDomain);
+					legendYScale = updateLegendYScale();
+					createLegendRectangles();
+					createLegendZeroRectangle();
+					/*
+							const legendAxis = d3.axisRight(legendYScale);
+							legendArea
+								.append("g")
+								.attr(
+									"transform",
+									`translate(${legendPadding.left},${legendPadding.top})`
+								)
+								.call(legendAxis);
+							*/
+					function createLegendZeroRectangle() {
+						legendBar.select("#zeroRectangle").remove();
+						legendBar
+							.append("rect")
+							.attr("id", "zeroRectangle")
+							.attr("fill", "black")
+							.attr("height", 1)
+							.attr("width", legendDimensions.width)
+							.attr("y", legendYScale(1));
+					}
+					function createLegendRectangles() {
+						legendBar.selectAll("rect").remove();
+						legendBar
+							.selectAll("rect")
+							.data(expandedDomain)
+							.join("rect")
+							.attr("fill", colorScale)
+							.attr("height", 1)
+							.attr("width", legendDimensions.width)
+							.attr("y", (_d, i) => legendDimensions.height - i);
+					}
+					function updateLegendYScale() {
+						return d3
+							.scaleDivergingSymlog()
+							.domain([min, 1, max])
+							.range([legendDimensions.height, legendDimensions.height / 2, 0]);
+					}
+				}
+				function getColorScale() {
+					const extent = d3.extent(
+						countryData,
+						(d) => d.size / selectedCountry.size
+					);
 					return d3
 						.scaleDivergingSymlog()
-						.domain([min, 1, max])
-						.range([legendDimensions.height, legendDimensions.height / 2, 0]);
+						.domain([extent[0], 1, extent[1]])
+						.interpolator(d3.interpolatePuOr);
+				}
+
+				function updateCountryColors(e) {
+					d3.selectAll(".country")
+						.attr("fill", (d) => colorScale(d.size / selectedCountry.size))
+						.attr("stroke-width", 0);
+					d3.select(e).attr("stroke-width", 1);
 				}
 			}
-			function getColorScale() {
-				const extent = d3.extent(
-					countryData,
-					(d) => d.size / selectedCountry.size
-				);
-				return d3
-					.scaleDivergingSymlog()
-					.domain([extent[0], 1, extent[1]])
-					.interpolator(d3.interpolatePuOr);
-			}
-
-			function updateCountryColors(e) {
-				d3.selectAll(".country")
-					.attr("fill", (d) => colorScale(d.size / selectedCountry.size))
-					.attr("stroke-width", 0);
-				d3.select(e).attr("stroke-width", 1);
-			}
 		}
+
 		return mapArea;
 	}
-
-	const tooltip = d3
-		.select("#visHolder")
-		.append("div")
-		.style("opacity", 0)
-		.attr("id", "tooltip")
-		.style("font-size", "16px");
 
 	function getCountryDataWithSize() {
 		const correctedData = dataCorrecter(data);
