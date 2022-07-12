@@ -183,7 +183,6 @@ function Choropleth(
 
 		function countryMouseleave() {
 			tooltip.style("opacity", 0);
-			d3.select(this).style("stroke-width", 0.1);
 		}
 
 		function countryClick(_e, d) {
