@@ -1,5 +1,7 @@
 # WORK IN PROGRESS
 
+## Only works on desktop so far
+
 ## TODO
 
 - Refactor
@@ -9,5 +11,4 @@
 - Make legend draggable
 - Make map zoomable
 - Fix missing data
-- Animations
 - Fix double display of country name in legend when hover over selected country
