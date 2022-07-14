@@ -19,8 +19,10 @@ function replaceCountryName(row) {
 	const correction = corrections.find(
 		(correction) => correction.old === row.country
 	);
-	return {
-		...row,
-		country: correction ? correction.new : row.country,
-	};
+	return correction
+		? {
+				...row,
+				country: correction.new,
+		  }
+		: row;
 }
